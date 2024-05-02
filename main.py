@@ -1,11 +1,10 @@
-import time
-from typing import Annotated
+import json
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI
 
-from file_gpt import upload_file, delete_file, upload_vs, delete_vs, get_assistant_id, create_thread, update_run, client
 from config import THREAD_ID
-
+from file_gpt import get_assistant_id, client
+from util import parse
 
 app = FastAPI()
 
@@ -43,20 +42,8 @@ async def upload_file_endpoint(file_id):
     #         cited_file = client.files.retrieve(file_citation.file_id)
     #         citations.append(f"[{index}] {cited_file.filename}")
 
-    # print(message_content)
+    print(parse(message_content.value))
     return parse(message_content.value)
-
-def parse(res: str):
-    j = len(res) - 1
-    while (res[j] != '}'):
-        j -= 1
-    ans = ''
-    i = 0
-    while (i <= j):
-        ans += res[i]
-        i += 1
-    return ans
-
 
 
 
