@@ -8,6 +8,8 @@ def parse(res: str):
         j -= 1
     ans = ''
     i = 0
+    while res[i] != '{':
+        i += 1
     while i <= j:
         if res[i] == '\\':
             i += 1
