@@ -1,0 +1,4 @@
+.idea
+.env
+docs
+test_main.http

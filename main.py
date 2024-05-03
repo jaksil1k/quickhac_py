@@ -2,8 +2,8 @@ import json
 
 from fastapi import FastAPI
 
-from config import THREAD_ID
-from file_gpt import get_assistant_id, client
+from config import THREAD_ID, RUN_ID
+from file_gpt import get_assistant_id, client, upload_to_vs
 from util import parse
 
 app = FastAPI()
@@ -16,8 +16,20 @@ async def root():
 
 @app.post("/file")
 async def upload_file_endpoint(file_id):
-    # upload_vs(file_id)
+    upload_to_vs(file_id)
 
+    # thread = client.beta.threads.create(
+    #     messages=[
+    #         {
+    #             "role": "user",
+    #             "content": "How many shares of AAPL were outstanding at the end of of October 2023?",
+    #             # Attach the new file to the message.
+    #             "attachments": [
+    #                 {"file_id": file_id, "tools": [{"type": "file_search"}]}
+    #             ],
+    #         }
+    #     ]
+    # )
     thread_message = client.beta.threads.messages.create(
         THREAD_ID,
         role="user",
@@ -26,13 +38,13 @@ async def upload_file_endpoint(file_id):
             {"file_id": file_id, "tools": [{"type": 'file_search'}]}
         ],
     )
-    print(thread_message.id)
     run = client.beta.threads.runs.create_and_poll(
         thread_id=THREAD_ID, assistant_id=get_assistant_id()
     )
 
     messages = list(client.beta.threads.messages.list(thread_id=THREAD_ID, run_id=run.id))
 
+    print(messages)
     message_content = messages[0].content[0].text
     # annotations = message_content.annotations
     # citations = []
